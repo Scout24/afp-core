@@ -11,7 +11,7 @@ use_plugin("python.distutils")
 use_plugin("copy_resources")
 use_plugin("filter_resources")
 
-name = 'aws-federation-proxy'
+name = 'afp-core'
 summary = 'API and backend for temporary authentication to aws services'
 description = """API and backend for temporary authentication to aws services.
 Based on different providers the included backend uses the assumeRole call
@@ -46,7 +46,7 @@ def set_properties(project):
     project.set_property("integrationtest_parallel", True)
 
     project.set_property('copy_resources_target', '$dir_dist')
-    project.install_file('/var/www/aws-federation-proxy/', 'wsgi/api.wsgi')
+    project.install_file('/var/www/afp-core/', 'wsgi/api.wsgi')
     project.get_property('copy_resources_glob').extend(['wsgi/*'])
 
 
