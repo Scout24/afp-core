@@ -1,0 +1,10 @@
+venv
+target
+*.pyc
+*.pyo
+.coverage
+.DS_Store
+.idea
+*.iml
+*.sublime-project
+*.sublime-workspace
