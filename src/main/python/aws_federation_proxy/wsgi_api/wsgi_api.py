@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import datetime
 import traceback
 import simplejson
 
@@ -80,7 +81,8 @@ def build_credentials_dict(credentials):
         'AccessKeyId': credentials.access_key,
         'SecretAccessKey': credentials.secret_key,
         'Token': credentials.session_token,
-        'Expiration': credentials.expiration
+        'Expiration': credentials.expiration,
+        'LastUpdated': datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     }
 
 
@@ -188,6 +190,43 @@ def get_console(account, role):
     console_url = proxy.get_console_url(credentials, callback_url)
     response.content_type = 'text/plain; charset=utf-8'
     return str(console_url)
+
+
+def get_account_and_role(proxy):
+    accounts_and_roles = proxy.get_account_and_role_dict()
+    if len(accounts_and_roles) != 1:
+        raise ConfigurationError("Did not get exactly one account: %s" % (
+            accounts_and_roles))
+
+    roles = accounts_and_roles.values()[0]
+    if len(roles) != 1:
+        raise ConfigurationError("Did not get exactly one role: %s" % (
+            accounts_and_roles))
+
+    account = accounts_and_roles.keys()[0]
+    role = list(roles)[0][0]
+    return account, role
+
+
+@route('/meta-data/iam/security-credentials/')
+@with_exception_handling
+def get_ims_role():
+    proxy = initialize_federation_proxy()
+    _, role = get_account_and_role(proxy)
+    response.content_type = 'text/plain'
+    return role
+
+
+@route('/meta-data/iam/security-credentials/<role>')
+@with_exception_handling
+@get_proxy_return_json()
+def get_ims_credentials(proxy, role):
+    account, _ = get_account_and_role(proxy)
+    try:
+        credentials = proxy.get_aws_credentials(account, role)
+    except PermissionError, exc:
+        abort(404, exc)
+    return build_credentials_dict(credentials)
 
 
 def get_webapp():

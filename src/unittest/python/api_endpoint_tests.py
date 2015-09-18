@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import datetime
 import os
 import tempfile
 import shutil
@@ -36,7 +37,7 @@ CREDENTIALS = {
 }
 
 
-class ApiEndpointTest(TestCase):
+class BaseEndpointTest(TestCase):
     def setUp(self):
         self.user = 'testuser'
         self.config_path = tempfile.mkdtemp(prefix='afp-config-')
@@ -80,6 +81,9 @@ class ApiEndpointTest(TestCase):
             },
             'nonaccessibleaccount': {
                 'id': '987654321'
+            },
+            'the_only_account': {
+                'id': '424242'
             }
         }
 
@@ -111,6 +115,61 @@ class ApiEndpointTest(TestCase):
         if self.logger.handlers:
             self.logger.removeHandler(self.logger.handlers[0])
 
+
+class AWSEndpointTest(BaseEndpointTest):
+    def test_get_my_role(self):
+        self.providerconfig['provider']['class'] = "SingleAccountSingleRoleProvider"
+        self._create_app()
+
+        result = self.app.get('/meta-data/iam/security-credentials/')
+        self.assertEqual(result.status_int, 200)
+        self.assertEqual(result.body, "the_only_role")
+
+    def test_get_my_role_must_fail_if_multiple_roles_from_provider(self):
+        result = self.app.get('/meta-data/iam/security-credentials/', expect_errors=True)
+        self.assertNotEqual(result.status_int, 200)
+
+    def test_get_my_role_must_fail_if_no_roles_from_provider(self):
+        self.providerconfig['provider']['class'] = "NoAccountNoRoleProvider"
+        self._create_app()
+
+        result = self.app.get('/meta-data/iam/security-credentials/', expect_errors=True)
+        self.assertEqual(result.status_int, 404)
+
+    @mock_sts
+    def test_get_credentials(self):
+        self.providerconfig['provider']['class'] = "SingleAccountSingleRoleProvider"
+        self._create_app()
+
+        result = self.app.get('/meta-data/iam/security-credentials/the_only_role')
+        self.assertEqual(result.status_int, 200)
+        result_dict = dict(result.json)
+        del(result_dict['Expiration'])
+
+        last_updated = result_dict.pop('LastUpdated')
+        last_updated = datetime.datetime.strptime(last_updated, "%Y-%m-%dT%H:%M:%SZ")
+        time_delta = datetime.datetime.utcnow() - last_updated
+        self.assertLess(time_delta, datetime.timedelta(seconds=3))
+
+        self.assertEqual(result_dict, CREDENTIALS)
+
+        logged_data = self.log_file.read()
+        self.assertIn('access to account', logged_data)
+        self.assertIn('the_only_account', logged_data)
+        self.assertIn('the_only_role', logged_data)
+        self.assertIn(self.user, logged_data)
+
+    @mock_sts
+    def test_get_credentials_must_fail_for_forbidden_role(self):
+        result = self.app.get('/meta-data/iam/security-credentials/forbidden_role', expect_errors=True)
+        self.assertEqual(result.status_int, 404)
+
+    def test_get_credentials_must_fail_if_multiple_roles_from_provider(self):
+        result = self.app.get('/meta-data/iam/security-credentials/testrole', expect_errors=True)
+        self.assertNotEqual(result.status_int, 200)
+
+
+class AFPEndpointTest(BaseEndpointTest):
     def test_status_good_case(self):
         result = self.app.get('/status')
         expected_json = {"status": "200", "message": "OK"}
@@ -170,6 +229,7 @@ class ApiEndpointTest(TestCase):
         self.assertEqual(result.status_int, 200)
         result_dict = dict(result.json)
         del(result_dict['Expiration'])
+        del(result_dict['LastUpdated'])
         self.assertEqual(result_dict, CREDENTIALS)
         logged_data = self.log_file.read()
         self.assertIn('access to account', logged_data)
@@ -227,6 +287,7 @@ class ApiEndpointTest(TestCase):
         result = self.app.get('/account/testaccount/testrole')
         result_dict = dict(result.json)
         del(result_dict['Expiration'])
+        del(result_dict['LastUpdated'])
         self.assertEqual(result.status_int, 200)
         self.assertEqual(result_dict, expected_credentials)
         self.assertEqual(self.user, result.headers['X-Username'])

@@ -92,6 +92,16 @@ class SimpleTestProvider(BaseProvider):
             'testaccount1': set([('testrole2', reason)])}
 
 
+class SingleAccountSingleRoleProvider(BaseProvider):
+    def get_accounts_and_roles(self):
+        return {'the_only_account': set([('the_only_role', 'because I said so')])}
+
+
+class NoAccountNoRoleProvider(BaseProvider):
+    def get_accounts_and_roles(self):
+        return {}
+
+
 class GroupTestProvider(ProviderByGroups):
     """A sample Provider, for testing only
 

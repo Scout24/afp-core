@@ -43,6 +43,7 @@ class MachineProviderTests(BaseProviderTest):
     def test_allowed_domains_work(self, mock_gethostbyaddr):
         mock_gethostbyaddr.return_value = ["tuvfoo42.valid"]
         self.config['allowed_domains'] = ["something.else", "valid"]
+        self.config['role_prefix'] = 'roleprefix-'
         provider = self.testclass("tuvfoo42.valid", self.config)
         return_value = provider.get_accounts_and_roles()
         self.assertIn(ACCOUNT_NAME, return_value)
@@ -52,7 +53,7 @@ class MachineProviderTests(BaseProviderTest):
         self.assertEqual(len(roles), 1)
 
         role, reason = roles.pop()
-        self.assertEqual(role, "tuvfoo")
+        self.assertEqual(role, "roleprefix-tuvfoo")
         self.assertGreater(len(reason), 0)
 
     @patch("aws_federation_proxy.provider.provider_by_ip.gethostbyaddr")

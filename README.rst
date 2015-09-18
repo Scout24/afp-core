@@ -1,6 +1,6 @@
-********************
-aws-federation-proxy
-********************
+********
+afp-core
+********
 
 * Overview
 * Documentation of AWS Federation Proxy Backend

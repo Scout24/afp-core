@@ -20,10 +20,10 @@ The `AWSFederationProxy` needs two configurations:
 
     - ProviderByGroups:
 
-        + ``module``: Defines the provider module how you would import it in scripts <br>(e.g.: ``aws_federation_proxy.provider.sssd_provider``)
+        + ``module``: Defines the provider module how you would import it in scripts <br>(e.g.: ``aws_federation_proxy.provider.grp_provider``)
         + ``class``: Class to be used inside the provider module.
-          (optional, default `GroupProvider` is used)
-        + ``regex``: Only needed for ``ProviderByGroups`` (``sssd_provider`` for example).
+          (optional, default `Provider` is used)
+        + ``regex``: Only needed for ``ProviderByGroups`` (``grp_provider`` for example).
           In this Regex named groups are used to seperate *account* and *role* names.
           e.g.: ``foo-(?P<account>.*)-(?P<role>.*)``
         **The whole groupname is matched by this regex!**
@@ -31,8 +31,9 @@ The `AWSFederationProxy` needs two configurations:
     - ProviderByIP:
 
         + ``module``: Defines the provider module how you would import it in scripts <br>(e.g.: ``aws_federation_proxy.provider.provider_by_ip``)
-        + ``allowed_domains``: Only users from this domains are permitted.
+        + ``allowed_domains``: Only hosts from this domains are permitted.
         + ``account_name``: AWS Account with AWS Roles.
+        + ``role_prefix``: Prefix to prepend to the role.
 
 
 * **accounts configuration:**

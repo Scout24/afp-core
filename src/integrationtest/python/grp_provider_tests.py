@@ -11,7 +11,7 @@ class GrpProviderIntegrationTest(unittest2.TestCase):
     def test_get_group_list(self):
         my_user_name = pwd.getpwuid(os.getuid()).pw_name
         config = {
-            "regex": "(?P<account>.*)-(?P<role>.*)"
+            "regex": "(?P<account>.*)(?P<role>.*)"
         }
 
         provider = Provider(my_user_name, config)
