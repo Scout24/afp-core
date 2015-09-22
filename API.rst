@@ -6,9 +6,9 @@ Configuration
 =============
 Requires two environment variables set:
 
-* ``CONFIG_PATH``: Path of the directory with the configuration of the API and
-  the AWS Federation Proxy. Additionally to the AFP configuration the API itself
-  needs the following setting:
+``CONFIG_PATH``: Path of the directory with the configuration of the API and
+the AWS Federation Proxy. Additionally to the AFP configuration the API itself
+needs the following setting:
 
 .. code-block:: yaml
 
@@ -31,12 +31,10 @@ For logging, a single logger object is used. But the ``logging_handler`` setting
 allows you to add a handler to that logger, so you can send log messages to
 the destination of your choice.
 
-* ``ACCOUNT_CONFIG_PATH``: Path of the directory with the configuration of all
-  Accounts
+``ACCOUNT_CONFIG_PATH``: Path of the directory with the configuration of all
+Accounts
 
-.. note::
-
-    **For details in configuration, please see the AFP Section.**
+**For details in configuration, please see the AFP Section.**
 
 You use the example to set the environment in the context of an apache web
 server:
