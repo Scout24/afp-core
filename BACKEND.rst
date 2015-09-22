@@ -83,21 +83,21 @@ At first you have to define roles, which have the permission set you need.
 A role can be located on another aws account or on your main account,
 depending what you want to achieve. Here are two examples:
 
-# The **ProviderByGroups** is a good choice, if you want to authorize
-  humans. Create role(s) in another aws account, set your needed
-  permissions and define the **Trusted Entities**, which have to point to
-  your federation user:
+1. The **ProviderByGroups** is a good choice, if you want to authorize
+   humans. Create role(s) in another aws account, set your needed
+   permissions and define the **Trusted Entities**, which have to point to
+   your federation user:
 
-  ::
+   ::
 
-      arn:aws:iam::123456789:user/federation-user
+         arn:aws:iam::123456789:user/federation-user
 
-# The **ProviderByIP** is good for machine authentication. In this
-  scenario you have to define your wished roles inside your main
-  account. This roles should have no permissions at all. Why?
-  Resources in other accounts can then be configured to grant
-  access to this role then. But don't forget to define the
-  **Trusted Entities** for this roles as described in point 1.
+2. The **ProviderByIP** is good for machine authentication. In this
+   scenario you have to define your wished roles inside your main
+   account. This roles should have no permissions at all. Why?
+   Resources in other accounts can then be configured to grant
+   access to this role then. But don't forget to define the
+   **Trusted Entities** for this roles as described in point 1.
 
 Usage
 =====
