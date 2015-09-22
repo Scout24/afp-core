@@ -53,7 +53,7 @@ def initialize_federation_proxy(user=None):
     handler_config = config.get('logging_handler')
     try:
         logger = setup_logging(handler_config, logger_name='AWSFederationProxy')
-    except Exception, exc:
+    except Exception as exc:
         raise ConfigurationError(str(exc))
     proxy = AWSFederationProxy(user=user, config=config,
                                account_config=account_config, logger=logger)
@@ -224,7 +224,7 @@ def get_ims_credentials(proxy, role):
     account, _ = get_account_and_role(proxy)
     try:
         credentials = proxy.get_aws_credentials(account, role)
-    except PermissionError, exc:
+    except PermissionError as exc:
         abort(404, exc)
     return build_credentials_dict(credentials)
 

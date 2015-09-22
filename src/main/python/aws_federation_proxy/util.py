@@ -37,7 +37,7 @@ def setup_logging(handler_config, logger_name=""):
     kwargs = handler_config.get('kwargs', {})
     try:
         handler = klass(*args, **kwargs)
-    except Exception, exc:
+    except Exception as exc:
         message = ("Could not instantiate logging handler class '{klass}' "
                    "with args '{args}', kwargs '{kwargs}': {exc}")
         raise Exception(message.format(klass=klass, args=args,

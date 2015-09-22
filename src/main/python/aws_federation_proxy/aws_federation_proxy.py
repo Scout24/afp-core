@@ -21,7 +21,7 @@ def log_function_call(old_func):
         start = time.time()
         try:
             retval = old_func(self, *args, **kwargs)
-        except Exception, exc:
+        except Exception as exc:
             stop = time.time()
             self.logger.debug(
                 "%s(%s, %s) raised Exception %s after %.3f seconds",
@@ -82,7 +82,7 @@ class AWSFederationProxy(object):
         try:
             provider_class = _get_item_from_module(provider_module_name,
                                                    provider_class_name)
-        except Exception, exc:
+        except Exception as exc:
             raise ConfigurationError(str(exc))
         try:
             self.provider = provider_class(
