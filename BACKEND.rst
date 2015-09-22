@@ -44,6 +44,7 @@ Accounts Configuration
 ----------------------
 
 Here you need to map account aliases to account ids. Example:
+
 .. code-block:: yaml
 
       account-name:
