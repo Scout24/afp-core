@@ -60,26 +60,39 @@ server:
     WSGIScriptAlias /path/to/afp_human "/var/www/afp-core/api.wsgi"
     WSGIScriptAlias /path/to/afp_machine "/var/www/afp-core/api.wsgi"
 
-``/account``
-------------
-Return a set of all accounts and roles for the current user
+API-Endpoints
+=============
+
+Human-Authentication
+--------------------
+
+Accounts and Roles
+~~~~~~~~~~~~~~~~~~
+
+:Endpoint: ``/account``
+
+Returns a set of all accounts and roles for the current user.
 
 **Returns JSON:**
 
 .. code-block:: json
 
     {
-      "accountname1": ["rolename1", "rolename2", ...],
-      ...
+      "accountname1": ["rolename1", "rolename2"],
+      "accountname2": ["rolename3", "rolename4"],
     }
 
-``/account/<account>/<role>[?callbackurl=<CallbackURL>]``
----------------------------------------------------------
-Return a dict of credentials (access_key, secret_key and session token) and
-console URL for the specified role in the specified account
+Credentials and Console-URL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If callbackurl the User of the console will be redirected to this URL after the
-credentials expire.
+:Endpoint: ``/account/<account>/<role>[?callbackurl=<CallbackURL>]``
+
+Returns a dict of credentials (``access_key``, ``secret_key`` and
+``session_token``) and console URL for the specified role in the
+specified account.
+
+If ``callbackurl`` is set the user of the console will be redirected
+to this URL after the credentials expire.
 
 **Returns JSON:**
 
@@ -94,9 +107,13 @@ credentials expire.
       "console_url": "https://signin.aws.amazon.com/federation?Action=login&..."
     }
 
-``/account/<account>/<role>/credentials``
------------------------------------------
-Return a dict of credentials (access_key, secret_key and session token)
+Credentials only
+~~~~~~~~~~~~~~~~
+
+:Endpoint: ``/account/<account>/<role>/credentials``
+
+Returns a dict of credentials
+(``access_key``, ``secret_key`` and ``session_token``).
 
 **Returns JSON:**
 
@@ -110,13 +127,16 @@ Return a dict of credentials (access_key, secret_key and session token)
       }
     }
 
-``/account/<account>/<role>/consoleurl[?callbackurl=<CallbackURL>]``
---------------------------------------------------------------------
-Return string of the console URL for the specified role in the specified
+Console-URL only
+~~~~~~~~~~~~~~~~
+
+:Endpoint: ``/account/<account>/<role>/consoleurl[?callbackurl=<CallbackURL>]``
+
+Returns a string of the console URL for the specified role in the specified
 account.
 
-If callbackurl the User of the console will be redirected to this URL after the
-credentials expire.
+If ``callbackurl`` the user of the console will be redirected to this URL after
+the credentials expire.
 
 **Returns Plaintext:**
 
@@ -124,11 +144,17 @@ credentials expire.
 
     https://signin.aws.amazon.com/federation?Action=login&...
 
-``/meta-data/iam/security-credentials/``
-----------------------------------------
+Machine-Authentication
+----------------------
+
+Rolenames
+~~~~~~~~~
+
+:Endpoint: ``/meta-data/iam/security-credentials/``
+
 Return a single rolename.
 
-This Endpoint is used to authenticate from Boto. Returns an error,
+This endpoint is used to authenticate from Boto. Returns an error,
 if the provider does not return a single account/role combination
 
 **Returns Plaintext:**
@@ -137,11 +163,15 @@ if the provider does not return a single account/role combination
 
     rolename
 
-``/meta-data/iam/security-credentials/<rolename>``
---------------------------------------------------
-Return dict of credentials (access_key, secret_key and session token)
+Security-Credentials
+~~~~~~~~~~~~~~~~~~~~
 
-This Endpoint is used to authenticate from Boto. Returns an error,
+:Endpoint: ``/meta-data/iam/security-credentials/<rolename>``
+
+Returns dict of credentials
+(``access_key``, ``secret_key`` and ``session_token``).
+
+This endpoint is used to authenticate from Boto. Returns an error,
 if the provider does not return a single account/role combination
 or if the user has no access to the given role.
 
@@ -159,9 +189,12 @@ or if the user has no access to the given role.
       "Type": "AWS-HMAC"
     }
 
-``/status``
------------
-Return a dict of monitoring information (status, message)
+Status
+~~~~~~
+
+:Endpoint: ``/status``
+
+Returns a dict of monitoring information (``status``, ``message``)
 
 **Returns JSON:**
 
