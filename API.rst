@@ -1,14 +1,16 @@
-API [API]
-=========
+===
+API
+===
+
 Configuration
--------------
+=============
 Requires two environment variables set:
 
 * ``CONFIG_PATH``: Path of the directory with the configuration of the API and
-the AWS Federation Proxy. Additionally to the AFP configuration the API itself
-needs the following setting:
+  the AWS Federation Proxy. Additionally to the AFP configuration the API itself
+  needs the following setting:
 
-  .. code-block:: yaml
+.. code-block:: yaml
 
     'api': {
       'user_identification': {
@@ -22,23 +24,24 @@ needs the following setting:
       'kwargs': {}
     }
 
+The ``environment_field`` specifies which field from the WSGI environment identifies
+the user, i.e. it is considered to be the username.
 
-The environment_field specifies which field from the WSGI environment identifies
-the user, i.e. it is considered to be the user name.
-
-For logging, a single logger object is used. But the logging_handler setting
+For logging, a single logger object is used. But the ``logging_handler`` setting
 allows you to add a handler to that logger, so you can send log messages to
 the destination of your choice.
 
 * ``ACCOUNT_CONFIG_PATH``: Path of the directory with the configuration of all
-Accounts.
+  Accounts
 
-**For details in configuration, please see the AFP Section.**
+.. note::
 
-You use the example to set the Environment in the context of an apache web
+    **For details in configuration, please see the AFP Section.**
+
+You use the example to set the environment in the context of an apache web
 server:
 
-.. code-block::
+.. code-block:: apache
 
     <Location /path/to/afp_human>
         SetEnv CONFIG_PATH "/path/to/config_human"
@@ -65,14 +68,13 @@ Return a set of all accounts and roles for the current user
 
 .. code-block:: json
 
-  {
-    "accountname1": ["rolename1", "rolename2", ...],
-    ...
-  }
-
+    {
+      "accountname1": ["rolename1", "rolename2", ...],
+      ...
+    }
 
 ``/account/<account>/<role>[?callbackurl=<CallbackURL>]``
-----------------------------------------------------------
+---------------------------------------------------------
 Return a dict of credentials (access_key, secret_key and session token) and
 console URL for the specified role in the specified account
 
@@ -83,14 +85,14 @@ credentials expire.
 
 .. code-block:: json
 
-  {
-    "credentials": {
-      "access_key": "AKIAIOSFODNN7EXAMPLE",
-      "secret_key": "aJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY",
-      "session_token": "BQoEXAMPLEH4aoAH0gNCAPyJxz4BlCFFxWNE1OPTgk5TthT+..."
-    },
-    "console_url": "https://signin.aws.amazon.com/federation?Action=login&..."
-  }
+    {
+      "credentials": {
+        "access_key": "AKIAIOSFODNN7EXAMPLE",
+        "secret_key": "aJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY",
+        "session_token": "BQoEXAMPLEH4aoAH0gNCAPyJxz4BlCFFxWNE1OPTgk5TthT+..."
+      },
+      "console_url": "https://signin.aws.amazon.com/federation?Action=login&..."
+    }
 
 ``/account/<account>/<role>/credentials``
 -----------------------------------------
@@ -100,14 +102,13 @@ Return a dict of credentials (access_key, secret_key and session token)
 
 .. code-block:: json
 
-  {
-    "credentials": {
-      "access_key": "AKIAIOSFODNN7EXAMPLE",
-      "secret_key": "aJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY",
-      "session_token": "BQoEXAMPLEH4aoAH0gNCAPyJxz4BlCFFxWNE1OPTgk5TthT+..."
+    {
+      "credentials": {
+        "access_key": "AKIAIOSFODNN7EXAMPLE",
+        "secret_key": "aJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY",
+        "session_token": "BQoEXAMPLEH4aoAH0gNCAPyJxz4BlCFFxWNE1OPTgk5TthT+..."
+      }
     }
-  }
-
 
 ``/account/<account>/<role>/consoleurl[?callbackurl=<CallbackURL>]``
 --------------------------------------------------------------------
@@ -119,9 +120,9 @@ credentials expire.
 
 **Returns Plaintext:**
 
-.. code-block::
+::
 
-  https://signin.aws.amazon.com/federation?Action=login&...
+    https://signin.aws.amazon.com/federation?Action=login&...
 
 ``/meta-data/iam/security-credentials/``
 ----------------------------------------
@@ -132,7 +133,7 @@ if the provider does not return a single account/role combination
 
 **Returns Plaintext:**
 
-.. code-block::
+::
 
     rolename
 
@@ -166,7 +167,7 @@ Return a dict of monitoring information (status, message)
 
 .. code-block:: json
 
-  {
-    "status": "200",
-    "message": "OK"
-  }
+    {
+      "status": "200",
+      "message": "OK"
+    }
