@@ -8,7 +8,6 @@ import json
 import time
 import logging
 import requests
-import six
 
 from six.moves.urllib.parse import quote_plus
 from yamlreader import data_merge

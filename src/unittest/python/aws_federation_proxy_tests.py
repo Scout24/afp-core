@@ -2,7 +2,6 @@ from __future__ import print_function, absolute_import, division
 
 import logging
 import json
-import six
 from unittest2 import TestCase
 from moto import mock_sts
 from mock import patch, Mock

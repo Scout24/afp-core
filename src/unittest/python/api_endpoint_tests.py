@@ -6,7 +6,6 @@ import datetime
 import os
 import tempfile
 import shutil
-import six
 import yaml
 import logging
 import aws_federation_proxy.wsgi_api as wsgi_api
