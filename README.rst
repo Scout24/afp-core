@@ -1,3 +1,8 @@
+.. image:: https://travis-ci.org/ImmobilienScout24/afp-core.png?branch=master
+   :alt: Travis build status image
+   :align: left
+   :target: https://travis-ci.org/ImmobilienScout24/afp-core
+   
 ========
 afp-core
 ========
