@@ -124,7 +124,7 @@ class AWSEndpointTest(BaseEndpointTest):
 
         result = self.app.get('/meta-data/iam/security-credentials/')
         self.assertEqual(result.status_int, 200)
-        self.assertEqual(result.body, "the_only_role")
+        self.assertEqual(result.body, "the_only_role".encode())
 
     def test_get_my_role_must_fail_if_multiple_roles_from_provider(self):
         result = self.app.get('/meta-data/iam/security-credentials/', expect_errors=True)
@@ -253,7 +253,7 @@ class AFPEndpointTest(BaseEndpointTest):
                         "Destination=https%3A%2F%2Fconsole.aws.amazon.com%2F&"
                         "SigninToken={token}")
         expected_url = url_template.format(callbackurl=quote_plus(callbackurl),
-                                           token=token)
+                                           token=token).encode()
 
         result = self.app.get('/account/testaccount/testrole/consoleurl')
         self.assertEqual(result.status_int, 200)
@@ -262,7 +262,7 @@ class AFPEndpointTest(BaseEndpointTest):
         # Check if the Callback URL is set
         callbackurl = "https://www.foobar.invalid"
         expected_url = url_template.format(callbackurl=quote_plus(callbackurl),
-                                           token=token)
+                                           token=token).encode()
         result = self.app.get('/account/testaccount/testrole/consoleurl',
                               {'callbackurl': callbackurl})
         self.assertEqual(result.status_int, 200)
