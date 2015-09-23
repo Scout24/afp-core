@@ -1,0 +1,13 @@
+api:
+    user_identification:
+        environment_field: 'REMOTE_ADDR'
+aws:
+    access_key: 'AKIAIOSFODNN7EXAMPLE'
+    secret_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY'
+provider:
+    module: aws_federation_proxy.provider.provider_by_ip
+    class: Provider
+    allowed_domains:
+        - example.invalid
+    account_name: aws-example-account
+    role_prefix: myprefix_
