@@ -36,6 +36,8 @@ Application Configuration
 
     + ``module``: Defines the provider module how you would import it in scripts
       (e.g.: ``aws_federation_proxy.provider.provider_by_ip``)
+    + ``class``: Class to be used inside the provider module
+      (optional, default `Provider` is used)
     + ``allowed_domains``: Only hosts from this domains are permitted
     + ``account_name``: AWS Account with AWS Roles
     + ``role_prefix``: Prefix to prepend to the role
