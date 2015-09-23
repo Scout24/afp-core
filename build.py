@@ -33,6 +33,7 @@ def set_properties(project):
 
     project.depends_on("requests")
     project.depends_on("simplejson")
+    project.depends_on("six")
     project.depends_on("yamlreader")
     project.depends_on("bottle")
     project.depends_on("boto>=2.38.0")

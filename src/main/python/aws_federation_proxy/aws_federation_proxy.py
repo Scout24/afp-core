@@ -6,10 +6,11 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 import json
 import time
-import urllib
 import logging
 import requests
+import six
 
+from six.moves.urllib.parse import quote_plus
 from yamlreader import data_merge
 from boto.sts import STSConnection
 
@@ -159,7 +160,7 @@ class AWSFederationProxy(object):
                 **credentials.to_dict())
         except KeyError as error:
             raise Exception('Missing Key {0} in credentials'.format(error))
-        return urllib.quote_plus(json_temp_credentials)
+        return quote_plus(json_temp_credentials)
 
     @classmethod
     def _get_signin_token(cls, credentials):
@@ -189,8 +190,8 @@ class AWSFederationProxy(object):
             "&Destination={destination}"
             "&SigninToken={signin_token}")
         return request_url_template.format(
-            callbackurl=urllib.quote_plus(callback_url),
-            destination=urllib.quote_plus("https://console.aws.amazon.com/"),
+            callbackurl=quote_plus(callback_url),
+            destination=quote_plus("https://console.aws.amazon.com/"),
             signin_token=signin_token)
 
     def get_console_url(self, credentials, callback_url):

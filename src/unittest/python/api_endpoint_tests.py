@@ -6,12 +6,13 @@ import datetime
 import os
 import tempfile
 import shutil
+import six
 import yaml
 import logging
 import aws_federation_proxy.wsgi_api as wsgi_api
 
 from moto import mock_sts
-from urllib import quote_plus
+from six.moves.urllib.parse import quote_plus
 from webtest import TestApp
 from unittest2 import TestCase
 from mock import patch, Mock

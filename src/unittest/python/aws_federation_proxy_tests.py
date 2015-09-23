@@ -1,11 +1,12 @@
 from __future__ import print_function, absolute_import, division
 
 import logging
-import urllib
 import json
+import six
 from unittest2 import TestCase
 from moto import mock_sts
 from mock import patch, Mock
+from six.moves.urllib.parse import quote_plus, unquote_plus
 from aws_federation_proxy import AWSFederationProxy
 from aws_federation_proxy.aws_federation_proxy import log_function_call
 from aws_federation_proxy_mocks import MockAWSFederationProxyForInitTest
@@ -296,7 +297,7 @@ class BaseAFPTest(object):
             'sessionToken': self.test_session_token
         }
         returned_credentialstring = self.proxy._generate_urlencoded_json_credentials(self.credentials)
-        decoded_credentialstring = urllib.unquote_plus(
+        decoded_credentialstring = unquote_plus(
             returned_credentialstring)
         self.assertNotEqual(
             decoded_credentialstring,
@@ -336,7 +337,7 @@ class BaseAFPTest(object):
     def test_construct_console_url(self):
         token = "abcdefg123"
         callback_url = 'http://callback_url'
-        encoded_callback_url = urllib.quote_plus(callback_url)
+        encoded_callback_url = quote_plus(callback_url)
         expected_return = (
             'https://signin.aws.amazon.com/federation?'
             'Action=login&Issuer={callback_url}&'
@@ -355,7 +356,7 @@ class BaseAFPTest(object):
     def test_get_console_url(self):
         token = "abcdefg123"
         callback_url = 'http://callback_url'
-        encoded_callback_url = urllib.quote_plus(callback_url)
+        encoded_callback_url = quote_plus(callback_url)
         self.proxy._get_signin_token = Mock(return_value=token)
 
         console_url = self.proxy.get_console_url(
