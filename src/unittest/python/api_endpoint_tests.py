@@ -154,7 +154,7 @@ class AWSEndpointTest(BaseEndpointTest):
 
         self.assertEqual(result_dict, CREDENTIALS)
 
-        logged_data = self.log_file.read()
+        logged_data = str(self.log_file.read())
         self.assertIn('access to account', logged_data)
         self.assertIn('the_only_account', logged_data)
         self.assertIn('the_only_role', logged_data)
@@ -232,7 +232,7 @@ class AFPEndpointTest(BaseEndpointTest):
         del(result_dict['Expiration'])
         del(result_dict['LastUpdated'])
         self.assertEqual(result_dict, CREDENTIALS)
-        logged_data = self.log_file.read()
+        logged_data = str(self.log_file.read())
         self.assertIn('access to account', logged_data)
         self.assertIn('testaccount', logged_data)
         self.assertIn('testrole', logged_data)
@@ -344,7 +344,7 @@ class AFPEndpointTest(BaseEndpointTest):
         result.mustcontain("may not access")
         self.assertEqual(self.user, result.headers['X-Username'])
 
-        logged_data = self.log_file.read()
+        logged_data = str(self.log_file.read())
         self.assertIn('may not access role', logged_data)
         self.assertIn('testaccount', logged_data)
         self.assertIn('illegalrole', logged_data)
@@ -375,7 +375,7 @@ class AFPEndpointTest(BaseEndpointTest):
         result.mustcontain("may not access")
         self.assertEqual(self.user, result.headers['X-Username'])
 
-        logged_data = self.log_file.read()
+        logged_data = str(self.log_file.read())
         self.assertIn('may not access role', logged_data)
         self.assertIn('testaccount1', logged_data)
         self.assertIn('testrole', logged_data)
