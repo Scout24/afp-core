@@ -1,3 +1,5 @@
+from __future__ import print_function, absolute_import, unicode_literals, division
+
 from aws_federation_proxy.provider import ProviderByGroups
 
 import grp

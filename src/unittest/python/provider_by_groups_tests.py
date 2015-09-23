@@ -1,6 +1,8 @@
-from base_provider_tests import BaseProviderTest
+from __future__ import print_function, absolute_import, unicode_literals, division
 
+from base_provider_tests import BaseProviderTest
 from mock import Mock
+
 from aws_federation_proxy.provider.base_provider import ProviderByGroups
 
 
