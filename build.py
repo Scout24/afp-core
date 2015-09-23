@@ -32,7 +32,6 @@ def set_properties(project):
     project.build_depends_on("webtest")
 
     project.depends_on("requests")
-    project.depends_on("logging")
     project.depends_on("simplejson")
     project.depends_on("yamlreader")
     project.depends_on("bottle")
