@@ -1,0 +1,10 @@
+api:
+    user_identification:
+        environment_field: 'REMOTE_USER'
+aws:
+    access_key: 'AKIAIOSFODNN7EXAMPLE'
+    secret_key: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY'
+provider:
+    module: aws_federation_proxy.provider.grp_provider
+    class: Provider
+    regex: (?P<account>.*)-(?P<role>.*)
