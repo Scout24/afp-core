@@ -199,12 +199,12 @@ def get_account_and_role(proxy):
         raise ConfigurationError("Did not get exactly one account: %s" % (
             accounts_and_roles))
 
-    roles = accounts_and_roles.values()[0]
+    roles = list(accounts_and_roles.values())[0]
     if len(roles) != 1:
         raise ConfigurationError("Did not get exactly one role: %s" % (
             accounts_and_roles))
 
-    account = accounts_and_roles.keys()[0]
+    account = list(accounts_and_roles.keys())[0]
     role = list(roles)[0][0]
     return account, role
 
