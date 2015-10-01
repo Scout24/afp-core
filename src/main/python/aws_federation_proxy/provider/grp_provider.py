@@ -9,4 +9,4 @@ class Provider(ProviderByGroups):
     """Uses the builtin grp module to retrieve group information"""
 
     def get_group_list(self):
-        return [g.gr_name for g in grp.getgrall() if self.user in g.gr_mem]
+        return [g.gr_name for g in grp.getgrall() if self.user.lower() in map(unicode.lower, g.gr_mem)]
