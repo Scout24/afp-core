@@ -2,6 +2,10 @@
    :alt: Travis build status image
    :align: left
    :target: https://travis-ci.org/ImmobilienScout24/afp-core
+
+.. image:: https://coveralls.io/repos/ImmobilienScout24/afp-core/badge.png?branch=master
+    :alt: Coverage status
+    :target: https://coveralls.io/r/ImmobilienScout24/afp-core?branch=master
    
 ========
 afp-core
