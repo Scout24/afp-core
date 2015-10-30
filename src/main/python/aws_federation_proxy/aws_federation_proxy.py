@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """Module to provide the backend for the aws federation proxy service"""
 
