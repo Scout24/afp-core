@@ -2,7 +2,6 @@ from pybuilder.core import use_plugin, init
 
 use_plugin("python.core")
 use_plugin("python.unittest")
-use_plugin('python.integrationtest')
 use_plugin("python.install_dependencies")
 use_plugin("python.flake8")
 use_plugin("python.pylint")
@@ -41,9 +40,6 @@ def set_properties(project):
     project.set_property("verbose", True)
     project.set_property('flake8_include_test_sources', True)
     project.set_property('flake8_break_build', True)
-    project.set_property("integrationtest_always_verbose", True)
-    project.set_property("integrationtest_inherit_environment", True)
-    project.set_property("integrationtest_parallel", True)
 
     project.set_property('copy_resources_target', '$dir_dist')
     project.install_file('/var/www/afp-core/', 'wsgi/api.wsgi')
