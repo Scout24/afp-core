@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+"""Module to provide the backend for the aws federation proxy service"""
+
 from __future__ import print_function, absolute_import, unicode_literals, division
 
-"""Module to provide the backend for the aws federation proxy service"""
 
 import json
 import time
