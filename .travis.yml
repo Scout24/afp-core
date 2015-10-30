@@ -8,7 +8,7 @@ python:
   - "pypy"
   - "pypy3"
 install:
-  - pip install pybuilder
+  - pip install pybuilder==0.11.1
   - pip install coveralls
   - pyb install_dependencies
   
