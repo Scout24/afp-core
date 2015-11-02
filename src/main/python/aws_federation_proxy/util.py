@@ -22,7 +22,7 @@ def _get_item_from_module(module_name, item_name):
 
 
 def setup_logging(handler_config, logger_name=""):
-    logger = logging.getLogger('AWSFederationProxy')
+    logger = logging.getLogger(logger_name)
     if logger.handlers:
         # Was already initialized, nothing to do.
         return logger
