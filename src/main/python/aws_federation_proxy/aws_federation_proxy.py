@@ -141,7 +141,9 @@ class AWSFederationProxy(object):
                 role_arn=arn,
                 role_session_name=self.user)
         except Exception as error:
-            raise AWSError(str(error))
+            if error.status == 403:
+                raise PermissionError(error.message)
+            raise AWSError(error.message)
         return assumed_role_object.credentials
 
     @staticmethod

@@ -200,8 +200,8 @@ def get_account_and_role(proxy):
             accounts_and_roles))
 
     roles = list(accounts_and_roles.values())[0]
-    if len(roles) != 1:
-        raise ConfigurationError("Did not get exactly one role: %s" % (
+    if len(roles) > 1:
+        raise ConfigurationError("Did get more than one role: %s" % (
             accounts_and_roles))
 
     account = list(accounts_and_roles.keys())[0]
@@ -223,10 +223,7 @@ def get_ims_role():
 @get_proxy_return_json()
 def get_ims_credentials(proxy, role):
     account, _ = get_account_and_role(proxy)
-    try:
-        credentials = proxy.get_aws_credentials(account, role)
-    except PermissionError as exc:
-        abort(404, exc)
+    credentials = proxy.get_aws_credentials(account, role)
     return build_credentials_dict(credentials)
 
 
