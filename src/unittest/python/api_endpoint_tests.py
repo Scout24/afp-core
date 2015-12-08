@@ -15,7 +15,7 @@ from six.moves.urllib.parse import quote_plus
 from webtest import TestApp
 from unittest2 import TestCase
 from mock import patch, Mock
-from aws_federation_proxy import AWSError
+from aws_federation_proxy import AWSError, PermissionError
 
 # Else we run into problems with mocking
 os.environ['http_proxy'] = ''
@@ -118,6 +118,7 @@ class BaseEndpointTest(TestCase):
 
 
 class AWSEndpointTest(BaseEndpointTest):
+    @mock_sts
     def test_get_my_role(self):
         self.providerconfig['provider']['class'] = "SingleAccountSingleRoleProvider"
         self._create_app()
@@ -136,6 +137,16 @@ class AWSEndpointTest(BaseEndpointTest):
 
         result = self.app.get('/meta-data/iam/security-credentials/', expect_errors=True)
         self.assertEqual(result.status_int, 404)
+
+    @patch("aws_federation_proxy.AWSFederationProxy.get_aws_credentials")
+    def test_get_my_role_must_return_empty_success_if_role_not_exists_in_aws(self, mock_get_aws_credentials):
+        self.providerconfig['provider']['class'] = "SingleAccountSingleRoleProvider"
+        self._create_app()
+
+        mock_get_aws_credentials.side_effect = PermissionError("Foo")
+        result = self.app.get('/meta-data/iam/security-credentials/')
+        self.assertEqual(result.status_int, 200)
+        self.assertEqual(result.body, "")
 
     @mock_sts
     def test_get_credentials(self):
