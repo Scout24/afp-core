@@ -200,8 +200,8 @@ def get_account_and_role(proxy):
             accounts_and_roles))
 
     roles = list(accounts_and_roles.values())[0]
-    if len(roles) > 1:
-        raise ConfigurationError("Did get more than one role: %s" % (
+    if len(roles) != 1:
+        raise ConfigurationError("Did not get exactly one role: %s" % (
             accounts_and_roles))
 
     account = list(accounts_and_roles.keys())[0]
@@ -213,8 +213,12 @@ def get_account_and_role(proxy):
 @with_exception_handling
 def get_ims_role():
     proxy = initialize_federation_proxy()
-    _, role = get_account_and_role(proxy)
+    account, role = get_account_and_role(proxy)
     response.content_type = 'text/plain'
+    try:
+        proxy.get_aws_credentials(account, role)
+    except PermissionError:
+        return ""
     return role
 
 
