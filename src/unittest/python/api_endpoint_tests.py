@@ -146,7 +146,7 @@ class AWSEndpointTest(BaseEndpointTest):
         mock_get_aws_credentials.side_effect = PermissionError("Foo")
         result = self.app.get('/meta-data/iam/security-credentials/')
         self.assertEqual(result.status_int, 200)
-        self.assertEqual(result.body, "")
+        self.assertEqual(result.body, b"")
 
     @mock_sts
     def test_get_credentials(self):
