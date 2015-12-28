@@ -23,12 +23,14 @@ def _get_item_from_module(module_name, item_name):
     return klass
 
 
-def setup_logging(handler_config, logger_name='', log_level='info'):
+def setup_logging(config, logger_name=''):
+    handler_config = config.get('logging_handler')
     logger = logging.getLogger(logger_name)
     if logger.handlers:
         # Was already initialized, nothing to do.
         return logger
 
+    log_level = config.get('log_level', 'info')
     log_level = levelname_to_integer(log_level)
     logger.setLevel(log_level)
 
@@ -49,5 +51,10 @@ def setup_logging(handler_config, logger_name='', log_level='info'):
                    "with args '{args}', kwargs '{kwargs}': {exc}")
         raise Exception(message.format(klass=klass, args=args,
                                        kwargs=kwargs, exc=exc))
+
+    log_format = config.get('log_format', 'afp-core: [%(levelname)s] %(message)s')
+    formatter = logging.Formatter(log_format)
+    handler.setFormatter(formatter)
+
     logger.addHandler(handler)
     return logger

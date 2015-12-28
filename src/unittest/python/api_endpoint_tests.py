@@ -228,8 +228,8 @@ class AFPEndpointTest(BaseEndpointTest):
         self.assertIn('X-Username', result.headers)
 
     def test_setup_logging_sets_log_level(self):
-        setup_logging(self.basicconfig['logging_handler'],
-                      logger_name='foobar', log_level='debug')
+        self.basicconfig['log_level'] = 'debug'
+        setup_logging(self.basicconfig, logger_name='foobar')
         logger = logging.getLogger('foobar')
         self.assertEqual(logger.getEffectiveLevel(), logging.DEBUG)
 

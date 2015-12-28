@@ -8,5 +8,18 @@ provider:
     module: aws_federation_proxy.provider.grp_provider
     class: Provider
     regex: (?P<account>.*)-(?P<role>.*)
+
+# You can omit this section, it just shows the default values:
+logging_handler:
+  module: logging.handlers
+  class: SysLogHandler
+  args: []
+  kwargs:
+    address: /dev/log
+# You may need to reconfigure your syslog before the messages actually get
+# logged. For rsyslog, this line will do the job:
+# :syslogtag, isequal, "afp-core:"  -/var/log/afp-core.log
+
 # Can be 'debug', 'info', 'warning', 'error', or 'critical'.
 log_level: debug
+log_format: "afp-core: [%(levelname)s] %(message)s"
