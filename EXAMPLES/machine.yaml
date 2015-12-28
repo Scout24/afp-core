@@ -11,3 +11,5 @@ provider:
         - example.invalid
     account_name: aws-example-account
     role_prefix: myprefix_
+# Can be 'debug', 'info', 'warning', 'error', or 'critical'.
+log_level: debug

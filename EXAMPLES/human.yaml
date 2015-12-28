@@ -8,3 +8,5 @@ provider:
     module: aws_federation_proxy.provider.grp_provider
     class: Provider
     regex: (?P<account>.*)-(?P<role>.*)
+# Can be 'debug', 'info', 'warning', 'error', or 'critical'.
+log_level: debug

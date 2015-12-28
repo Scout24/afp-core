@@ -2,6 +2,8 @@ from __future__ import print_function, absolute_import, division
 
 import logging
 
+from pils import levelname_to_integer
+
 
 def _get_item_from_module(module_name, item_name):
     """Load classes/modules/functions/... from given config"""
@@ -21,12 +23,15 @@ def _get_item_from_module(module_name, item_name):
     return klass
 
 
-def setup_logging(handler_config, logger_name=""):
+def setup_logging(handler_config, logger_name='', log_level='info'):
     logger = logging.getLogger(logger_name)
     if logger.handlers:
         # Was already initialized, nothing to do.
         return logger
-    logger.setLevel(logging.INFO)
+
+    log_level = levelname_to_integer(log_level)
+    logger.setLevel(log_level)
+
     default_config = {
         'module': 'logging.handlers',
         'class': 'SysLogHandler',

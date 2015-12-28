@@ -52,8 +52,10 @@ def initialize_federation_proxy(user=None):
         user = get_user(config['api']['user_identification'])
 
     handler_config = config.get('logging_handler')
+    log_level = config.get('log_level', 'info')
     try:
-        logger = setup_logging(handler_config, logger_name='AWSFederationProxy')
+        logger = setup_logging(handler_config, logger_name='AWSFederationProxy',
+                               log_level=log_level)
     except Exception as exc:
         raise ConfigurationError(str(exc))
     proxy = AWSFederationProxy(user=user, config=config,

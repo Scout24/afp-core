@@ -9,6 +9,7 @@ import shutil
 import yaml
 import logging
 import aws_federation_proxy.wsgi_api as wsgi_api
+from aws_federation_proxy.util import setup_logging
 
 from moto import mock_sts
 from six.moves.urllib.parse import quote_plus
@@ -225,6 +226,12 @@ class AFPEndpointTest(BaseEndpointTest):
         result = self.app.get('/account', expect_errors=True)
         self.assertEqual(result.status_int, 404)
         self.assertIn('X-Username', result.headers)
+
+    def test_setup_logging_sets_log_level(self):
+        setup_logging(self.basicconfig['logging_handler'],
+                      logger_name='foobar', log_level='debug')
+        logger = logging.getLogger('foobar')
+        self.assertEqual(logger.getEffectiveLevel(), logging.DEBUG)
 
     def test_get_list_roles_and_accounts(self):
         result = self.app.get('/account')
