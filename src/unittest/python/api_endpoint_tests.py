@@ -113,6 +113,7 @@ class BaseEndpointTest(TestCase):
     def tearDown(self):
         shutil.rmtree(self.config_path)
         shutil.rmtree(self.account_config_path)
+        os.unlink(self.log_file.name)
         if self.logger.handlers:
             self.logger.removeHandler(self.logger.handlers[0])
 
