@@ -30,7 +30,7 @@ def set_properties(project):
     project.build_depends_on("unittest2")
     project.build_depends_on("webtest")
 
-    project.depends_on("pils")
+    project.depends_on("pils>=0.1.21")
     project.depends_on("requests")
     project.depends_on("simplejson")
     project.depends_on("six")
