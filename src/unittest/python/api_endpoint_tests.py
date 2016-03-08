@@ -198,7 +198,8 @@ class AFPEndpointTest(BaseEndpointTest):
             }
         }
         self._create_app()
-        result = self.app.get('/status', expect_errors=True)
+        with self.assertLogs(wsgi_api.LOGGER_NAME, logging.ERROR):
+            result = self.app.get('/status', expect_errors=True)
         self.assertEqual(result.status_int, 404)
 
     def test_account_broken_providerconfig_must_be_reported(self):
@@ -403,8 +404,17 @@ class AFPEndpointTest(BaseEndpointTest):
     @patch("aws_federation_proxy.aws_federation_proxy.AWSFederationProxy.get_aws_credentials")
     def test_502_on_aws_failure(self, mock_get_aws_credentials):
         mock_get_aws_credentials.side_effect = AWSError("aws is down")
-        result = self.app.get('/account/testaccount/testrole',
-                              expect_errors=True)
+
+        with self.assertLogs(wsgi_api.LOGGER_NAME, logging.ERROR):
+            result = self.app.get('/account/testaccount/testrole',
+                                  expect_errors=True)
         self.assertEqual(result.status_int, 502)
         result.mustcontain("aws is down")
         self.assertEqual(self.user, result.headers['X-Username'])
+
+    @patch("aws_federation_proxy.aws_federation_proxy.AWSFederationProxy.get_aws_credentials")
+    def test_all_exceptions_are_loggged(self, mock_get_aws_credentials):
+        mock_get_aws_credentials.side_effect = Exception("some random exception")
+
+        with self.assertLogs(wsgi_api.LOGGER_NAME, logging.ERROR):
+            self.app.get('/account/testaccount/testrole', expect_errors=True)
