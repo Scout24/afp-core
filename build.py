@@ -27,7 +27,7 @@ def set_properties(project):
     project.build_depends_on("mock")
     project.build_depends_on("moto")
     project.build_depends_on("PyYAML")
-    project.build_depends_on("unittest2")
+    project.build_depends_on("unittest2>=0.7")
     project.build_depends_on("webtest")
 
     project.depends_on("pils>=0.1.21")
