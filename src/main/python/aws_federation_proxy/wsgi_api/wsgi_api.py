@@ -3,6 +3,7 @@
 from __future__ import print_function, absolute_import, division
 
 import datetime
+import logging
 import traceback
 import simplejson
 
@@ -25,15 +26,19 @@ def with_exception_handling(old_function):
     """Decorator function to ensure proper exception handling"""
     @wraps(old_function)
     def new_function(*args, **kwargs):
+        logger = logging.getLogger(LOGGER_NAME)
         try:
             result = old_function(*args, **kwargs)
         except ConfigurationError as err:
+            logger.exception("Call to '%s' failed:", old_function.__name__)
             abort(404, err)
         except AWSError as err:
+            logger.exception("AWS call in '%s' failed:", old_function.__name__)
             abort(502, err)
         except PermissionError as err:
             abort(403, err)
         except Exception:
+            logger.exception("Call to '%s' failed:", old_function.__name__)
             message = traceback.format_exc()
             abort(500, "Exception caught {0}".format(message))
         return result
