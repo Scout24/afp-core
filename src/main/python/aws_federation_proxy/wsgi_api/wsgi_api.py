@@ -18,6 +18,9 @@ from bottle import route, abort, request, response, error, default_app
 from aws_federation_proxy.util import setup_logging
 
 
+LOGGER_NAME = 'AWSFederationProxy'
+
+
 def with_exception_handling(old_function):
     """Decorator function to ensure proper exception handling"""
     @wraps(old_function)
@@ -43,18 +46,18 @@ def initialize_federation_proxy(user=None):
     if config_path is None:
         raise Exception("No Config Path specified")
     config = yaml_load(config_path)
+
+    try:
+        logger = setup_logging(config, logger_name=LOGGER_NAME)
+    except Exception as exc:
+        raise ConfigurationError(str(exc))
+
+    if user is None:
+        user = get_user(config['api']['user_identification'])
     account_config_path = request.environ.get('ACCOUNT_CONFIG_PATH')
     if account_config_path is None:
         raise Exception("No Account Config Path specified")
     account_config = yaml_load(account_config_path)
-
-    if user is None:
-        user = get_user(config['api']['user_identification'])
-
-    try:
-        logger = setup_logging(config, logger_name='AWSFederationProxy')
-    except Exception as exc:
-        raise ConfigurationError(str(exc))
     proxy = AWSFederationProxy(user=user, config=config,
                                account_config=account_config, logger=logger)
     return proxy
