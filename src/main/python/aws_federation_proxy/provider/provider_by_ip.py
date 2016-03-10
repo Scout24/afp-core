@@ -17,7 +17,13 @@ class ProviderByIP(BaseProvider):
     def get_accounts_and_roles(self):
         """Return a dict with one account and one aws role"""
         self.role_prefix = self.config.get('role_prefix', "")
-        self.client_fqdn = gethostbyaddr(self.user)[0]
+        try:
+            self.client_fqdn = gethostbyaddr(self.user)[0]
+        except Exception as exc:
+            # The exception message of gethostbyaddr() is quite useless since
+            # it does not include the address that was looked up.
+            message = "Lookup for '{0}' failed: {1}".format(self.user, exc)
+            raise Exception(message)
         self.check_host_allowed()
         self._get_role_name()
         reason = "Machine {0} (FQDN {1}) matched the role {2}".format(
