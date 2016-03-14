@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 from socket import gethostbyaddr
 
+from aws_federation_proxy import PermissionError
 from aws_federation_proxy.provider import BaseProvider
 
 
@@ -34,7 +35,7 @@ class ProviderByIP(BaseProvider):
         self.client_host, self.client_domain = self.client_fqdn.split(".", 1)
         allowed_domains = self.config['allowed_domains']
         if self.client_domain not in allowed_domains:
-            raise Exception("Client IP {0} (FQDN {1}) is not permitted".format(
+            raise PermissionError("Client IP {0} (FQDN {1}) is not permitted".format(
                 self.user, self.client_fqdn))
 
     def _get_role_name(self):
@@ -53,7 +54,8 @@ class Provider(ProviderByIP):
     def check_host_allowed(self):
         super(Provider, self).check_host_allowed()
         if len(self.client_host) != 8:
-            raise Exception("Client {0} has an invalid name".format(self.client_fqdn))
+            raise PermissionError(
+                "Client {0} has an invalid name".format(self.client_fqdn))
 
     def _normalize_loctyp(self):
         """Return the normalized (ber/ham -> pro) loctyp of self.client_host"""
