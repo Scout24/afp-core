@@ -2,12 +2,13 @@ from __future__ import print_function, absolute_import, division
 
 import logging
 import json
+import boto
 from unittest2 import TestCase
 from moto import mock_sts
 from mock import patch, Mock
 from six.moves.urllib.parse import quote_plus, unquote_plus
 from aws_federation_proxy import AWSFederationProxy
-from aws_federation_proxy.aws_federation_proxy import log_function_call
+from aws_federation_proxy.aws_federation_proxy import log_function_call, PermissionError, AWSError
 from aws_federation_proxy_mocks import MockAWSFederationProxyForInitTest
 
 
@@ -247,6 +248,34 @@ class BaseAFPTest(object):
         mock_sts_connection.return_value.assume_role.assert_called_with(
             role_arn=arn,
             role_session_name=self.testuser)
+
+    @patch("aws_federation_proxy.aws_federation_proxy.STSConnection")
+    @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")
+    def test_get_aws_credentials_handles_403_permission_denied(
+            self, mock_check_user_permissions, mock_sts_connection):
+        """403 Permission Denied must raise PermissionError"""
+        class FakeHTTPError(Exception):
+            status = 403
+        mock_sts_connection.side_effect = FakeHTTPError
+        self.assertRaises(
+            PermissionError,
+            self.proxy.get_aws_credentials, self.account_alias, self.role)
+
+    @patch("aws_federation_proxy.aws_federation_proxy.STSConnection")
+    @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")
+    def test_get_aws_credentials_handles_sts_errors(
+            self, mock_check_user_permissions, mock_sts_connection):
+        """Other errors must raise AWSError and log the AWS request ID"""
+        fake_boto_error = boto.exception.AWSConnectionError("AWS message")
+        fake_boto_error.request_id = "111222333"
+        mock_sts_connection.side_effect = fake_boto_error
+
+        with self.assertLogs(level='ERROR') as cm:
+            self.assertRaises(
+                AWSError,
+                self.proxy.get_aws_credentials, self.account_alias, self.role)
+        all_log_messages = "".join(cm.output)
+        self.assertIn(fake_boto_error.request_id, all_log_messages)
 
     @mock_sts
     @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")

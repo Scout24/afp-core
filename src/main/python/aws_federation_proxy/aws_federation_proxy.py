@@ -143,6 +143,8 @@ class AWSFederationProxy(object):
         except Exception as error:
             if getattr(error, 'status', None) == 403:
                 raise PermissionError(error.message)
+            self.logger.exception("AWS STS failed with: {exc_vars}".format(
+                exc_vars=vars(error)))
             raise AWSError(error.message)
         return assumed_role_object.credentials
 
