@@ -6,6 +6,10 @@
 .. image:: https://coveralls.io/repos/ImmobilienScout24/afp-core/badge.png?branch=master
     :alt: Coverage status
     :target: https://coveralls.io/r/ImmobilienScout24/afp-core?branch=master
+
+.. image:: https://landscape.io/github/ImmobilienScout24/afp-core/master/landscape.svg?style=flat
+   :target: https://landscape.io/github/ImmobilienScout24/afp-core/master
+   :alt: Code Health
    
 ========
 afp-core
