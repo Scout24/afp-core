@@ -86,10 +86,10 @@ def build_credentials_dict(credentials):
     return {
         'Code': 'Success',
         'Type': 'AWS-HMAC',
-        'AccessKeyId': credentials.access_key,
-        'SecretAccessKey': credentials.secret_key,
-        'Token': credentials.session_token,
-        'Expiration': credentials.expiration,
+        'AccessKeyId': credentials['AccessKeyId'],
+        'SecretAccessKey': credentials['SecretAccessKey'],
+        'Token': credentials['SessionToken'],
+        'Expiration': credentials['Expiration'].strftime("%Y-%m-%dT%H:%M:%SZ"),
         'LastUpdated': datetime.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
     }
 

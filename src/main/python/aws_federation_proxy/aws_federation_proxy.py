@@ -11,7 +11,7 @@ import requests
 
 from six.moves.urllib.parse import quote_plus
 from yamlreader import data_merge
-from boto.sts import STSConnection
+import boto3
 
 from .util import _get_item_from_module
 
@@ -134,33 +134,34 @@ class AWSFederationProxy(object):
         key_id = self.application_config['aws']['access_key']
         secret_key = self.application_config['aws']['secret_key']
         try:
-            sts_connection = STSConnection(
+            sts_connection = boto3.client(
+                'sts',
                 aws_access_key_id=key_id,
                 aws_secret_access_key=secret_key)
-            assumed_role_object = sts_connection.assume_role(
-                role_arn=arn,
-                role_session_name=self.user)
+            assumed_role = sts_connection.assume_role(
+                RoleArn=arn,
+                RoleSessionName=self.user)
         except Exception as error:
             if getattr(error, 'status', None) == 403:
                 raise PermissionError(str(error))
             self.logger.exception("AWS STS failed with: {exc_vars}".format(
                 exc_vars=vars(error)))
             raise AWSError(str(error))
-        return assumed_role_object.credentials
+        return assumed_role['Credentials']
 
     @staticmethod
     def _generate_urlencoded_json_credentials(credentials):
         """Return urlencoded json-string with given credentials"""
         json_temp_credentials = (
             '{{'
-            '"sessionId":"{access_key}",'
-            '"sessionKey":"{secret_key}",'
-            '"sessionToken":"{session_token}"'
+            '"sessionId":"{AccessKeyId}",'
+            '"sessionKey":"{SecretAccessKey}",'
+            '"sessionToken":"{SessionToken}"'
             '}}'
         )
         try:
             json_temp_credentials = json_temp_credentials.format(
-                **credentials.to_dict())
+                **credentials)
         except KeyError as error:
             raise Exception('Missing Key {0} in credentials'.format(error))
         return quote_plus(json_temp_credentials)
