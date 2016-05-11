@@ -2,7 +2,6 @@ from __future__ import print_function, absolute_import, division
 
 import logging
 import json
-import boto
 from unittest2 import TestCase
 from moto import mock_sts
 from mock import patch, Mock
@@ -10,11 +9,6 @@ from six.moves.urllib.parse import quote_plus, unquote_plus
 from aws_federation_proxy import AWSFederationProxy
 from aws_federation_proxy.aws_federation_proxy import log_function_call, PermissionError, AWSError
 from aws_federation_proxy_mocks import MockAWSFederationProxyForInitTest
-
-
-class CredentialDict(dict):
-    def to_dict(self):
-        return self
 
 
 class LogFunctionCallTest(TestCase):
@@ -194,11 +188,11 @@ class BaseAFPTest(object):
         self.test_access_key = "unencoded string;"
         self.test_secret_key = "another weird string"
         self.test_session_token = "string with special characters %&;?"
-        self.credentials = CredentialDict({
-            'access_key': self.test_access_key,
-            'secret_key': self.test_secret_key,
-            'session_token': self.test_session_token
-        })
+        self.credentials = {
+            'AccessKeyId': self.test_access_key,
+            'SecretAccessKey': self.test_secret_key,
+            'SessionToken': self.test_session_token
+        }
 
     def test_check_user_permissions_ok(self):
         self.proxy.check_user_permissions('testaccount', 'testrole')
@@ -235,40 +229,48 @@ class BaseAFPTest(object):
             Exception, '(noaccount|norole)',
             self.proxy.check_user_permissions, 'noaccount', 'norole')
 
-    @patch("aws_federation_proxy.aws_federation_proxy.STSConnection")
+    @patch("aws_federation_proxy.aws_federation_proxy.boto3")
     @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")
     def test_get_aws_credentials_uses_correct_arn(
-            self, mock_check_user_permissions, mock_sts_connection):
+            self, mock_check_user_permissions, mock_boto3):
         arn = "arn:aws:iam::{account_id}:role/{role}"
         arn = arn.format(
             account_id=self.account_config[self.account_alias]['id'],
             role=self.role)
+        mock_connection = Mock()
+        mock_boto3.client.return_value = mock_connection
+        mock_connection.assume_role.return_value = {'Credentials': 'foobar'}
 
         self.proxy.get_aws_credentials(self.account_alias, self.role)
-        mock_sts_connection.return_value.assume_role.assert_called_with(
-            role_arn=arn,
-            role_session_name=self.testuser)
+        mock_connection.assume_role.assert_called_with(
+            RoleArn=arn,
+            RoleSessionName=self.testuser)
 
-    @patch("aws_federation_proxy.aws_federation_proxy.STSConnection")
+    @patch("aws_federation_proxy.aws_federation_proxy.boto3")
     @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")
     def test_get_aws_credentials_handles_403_permission_denied(
-            self, mock_check_user_permissions, mock_sts_connection):
+            self, mock_check_user_permissions, mock_boto3):
         """403 Permission Denied must raise PermissionError"""
         class FakeHTTPError(Exception):
             status = 403
-        mock_sts_connection.side_effect = FakeHTTPError
+        mock_connection = Mock()
+        mock_boto3.client.return_value = mock_connection
+        mock_connection.assume_role.side_effect = FakeHTTPError
+
         self.assertRaises(
             PermissionError,
             self.proxy.get_aws_credentials, self.account_alias, self.role)
 
-    @patch("aws_federation_proxy.aws_federation_proxy.STSConnection")
+    @patch("aws_federation_proxy.aws_federation_proxy.boto3")
     @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")
     def test_get_aws_credentials_handles_sts_errors(
-            self, mock_check_user_permissions, mock_sts_connection):
+            self, mock_check_user_permissions, mock_boto3):
         """Other errors must raise AWSError and log the AWS request ID"""
-        fake_boto_error = boto.exception.AWSConnectionError("AWS message")
+        fake_boto_error = Exception("AWS message")
         fake_boto_error.request_id = "111222333"
-        mock_sts_connection.side_effect = fake_boto_error
+        mock_connection = Mock()
+        mock_boto3.client.return_value = mock_connection
+        mock_connection.assume_role.side_effect = fake_boto_error
 
         with self.assertLogs(level='ERROR') as cm:
             self.assertRaises(
@@ -285,25 +287,14 @@ class BaseAFPTest(object):
             'Rh3c/LTo6UDdyJwOOvEVPvLXCrrrUtdnniCEXAMPLE/IvU1dYUg2RVAJBan'
             'LiHb4IgRmpRV3zrkuWJOgQs8IZZaIv2BXIa2R4OlgkBN9bkUDNCJiBeb/'
             'AXlzBBko7b15fjrBs2+cTQtpZ3CYWFXG8C5zqx37wnOE49mRl/+OtkIKGO7fAE')
-        expected_result = {
-            'access_key': u'AKIAIOSFODNN7EXAMPLE',
-            'secret_key': u'aJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY',
-            'session_token': session_token
-        }
+        expected_access_key = u'AKIAIOSFODNN7EXAMPLE'
+        expected_secret_key = u'aJalrXUtnFEMI/K7MDENG/bPxRfiCYzEXAMPLEKEY'
+        expected_session_token = session_token
 
         result = self.proxy.get_aws_credentials('aws-account-alias', 'role')
-        self.assertEqual(
-            result.access_key,
-            expected_result['access_key'],
-            'Should be the same AWS access_key')
-        self.assertEqual(
-            result.secret_key,
-            expected_result['secret_key'],
-            'Should be the same AWS secret_key')
-        self.assertEqual(
-            result.session_token,
-            expected_result['session_token'],
-            'Should be the same AWS session_token')
+        self.assertEqual(result['AccessKeyId'], expected_access_key)
+        self.assertEqual(result['SecretAccessKey'], expected_secret_key)
+        self.assertEqual(result['SessionToken'], expected_session_token)
 
         # Check that exception is raised if account is not configured
         self.assertRaisesRegexp(Exception, 'account-alias-not-configured',
@@ -334,12 +325,14 @@ class BaseAFPTest(object):
         self.assertEqual(credential_dict, expected_credential_dict)
 
     def test_encode_json_credentials_throws_exception_on_missing_parameter(self):
-        credential_dict = CredentialDict({
-            'access_key': self.test_access_key,
-            'secret_key': self.test_secret_key,
-        })
+        credential_dict = {
+            'AccessKeyId': self.test_access_key,
+            'SecretAccessKey': self.test_secret_key,
+        }
+
+        # Must complain about the missing SessionToken.
         self.assertRaisesRegexp(
-            Exception, 'session_token',
+            Exception, 'SessionToken',
             self.proxy._generate_urlencoded_json_credentials, credential_dict
         )
 
