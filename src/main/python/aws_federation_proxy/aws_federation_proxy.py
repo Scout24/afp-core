@@ -171,6 +171,7 @@ class AWSFederationProxy(object):
         request_url = (
             "https://signin.aws.amazon.com/federation"
             "?Action=getSigninToken"
+            "&SessionDuration=43200"
             "&Session=" +
             cls._generate_urlencoded_json_credentials(credentials))
         reply = requests.get(request_url)
