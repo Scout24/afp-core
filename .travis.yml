@@ -1,7 +1,9 @@
 language: python
 python:
   - "pypy"
-  - "pypy3"
+# pypy3 is broken until https://github.com/pallets/flask/pull/1841
+# is released, which should happen in flask version 0.11.2.
+#  - "pypy3"
   - "2.6"
   - "2.7"
   - "3.3"
