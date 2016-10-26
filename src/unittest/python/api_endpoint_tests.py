@@ -351,17 +351,17 @@ class AFPEndpointTest(BaseEndpointTest):
         self.assertEqual(result.status_int, 403)
         self.assertEqual(self.user, result.headers['X-Username'])
 
-        result.mustcontain("may not access")
+        result.mustcontain("Permission Denied")
         result = self.app.get('/account/testaccount/illegalrole/credentials',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("may not access")
+        result.mustcontain("Permission Denied")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         result = self.app.get('/account/testaccount/illegalrole/consoleurl',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("may not access")
+        result.mustcontain("Permission Denied")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         logged_data = str(self.log_file.read())
@@ -380,19 +380,19 @@ class AFPEndpointTest(BaseEndpointTest):
         result = self.app.get('/account/testaccount1/testrole',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("may not access")
+        result.mustcontain("Permission Denied")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         result = self.app.get('/account/testaccount1/testrole/credentials',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("may not access")
+        result.mustcontain("Permission Denied")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         result = self.app.get('/account/testaccount1/testrole/consoleurl',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("may not access")
+        result.mustcontain("Permission Denied")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         logged_data = str(self.log_file.read())
@@ -409,7 +409,7 @@ class AFPEndpointTest(BaseEndpointTest):
             result = self.app.get('/account/testaccount/testrole',
                                   expect_errors=True)
         self.assertEqual(result.status_int, 502)
-        result.mustcontain("aws is down")
+        result.mustcontain("Call to AWS failed")
         self.assertEqual(self.user, result.headers['X-Username'])
 
     @patch("aws_federation_proxy.aws_federation_proxy.AWSFederationProxy.get_aws_credentials")

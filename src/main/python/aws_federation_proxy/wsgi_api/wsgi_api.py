@@ -4,7 +4,6 @@ from __future__ import print_function, absolute_import, division
 
 import datetime
 import logging
-import traceback
 import simplejson
 
 from aws_federation_proxy import (
@@ -29,18 +28,18 @@ def with_exception_handling(old_function):
         logger = logging.getLogger(LOGGER_NAME)
         try:
             result = old_function(*args, **kwargs)
-        except ConfigurationError as err:
+        except ConfigurationError:
             logger.exception("Call to '%s' failed:", old_function.__name__)
-            abort(404, err)
-        except AWSError as err:
+            abort(404, "ConfigurationError")
+        except AWSError:
             logger.exception("AWS call in '%s' failed:", old_function.__name__)
-            abort(502, err)
-        except PermissionError as err:
-            abort(403, err)
+            abort(502, "Call to AWS failed")
+        except PermissionError:
+            logger.exception("Permission denied:")
+            abort(403, "Permission Denied")
         except Exception:
             logger.exception("Call to '%s' failed:", old_function.__name__)
-            message = traceback.format_exc()
-            abort(500, "Exception caught {0}".format(message))
+            abort(500, "Internal Server Error")
         return result
     return new_function
 
