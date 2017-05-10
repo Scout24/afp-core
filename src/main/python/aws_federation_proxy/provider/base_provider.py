@@ -94,11 +94,13 @@ class SimpleTestProvider(BaseProvider):
 
 
 class SingleAccountSingleRoleProvider(BaseProvider):
+    """A sample Provider, for testing only"""
     def get_accounts_and_roles(self):
         return {'the_only_account': set([('the_only_role', 'because I said so')])}
 
 
 class NoAccountNoRoleProvider(BaseProvider):
+    """A sample Provider, for testing only"""
     def get_accounts_and_roles(self):
         return {}
 
