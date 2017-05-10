@@ -28,7 +28,9 @@ def set_properties(project):
     project.build_depends_on("moto")
     project.build_depends_on("PyYAML")
     project.build_depends_on("unittest2>=0.7")
-    project.build_depends_on("webtest")
+    # webtest 2.0.24 dropped support for Python 2.6
+    # see https://webtest.readthedocs.io/en/latest/changelog.html#id4
+    project.build_depends_on("webtest<2.0.24")
 
     project.depends_on("pils>=0.1.21")
     project.depends_on("requests")
