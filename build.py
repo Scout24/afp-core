@@ -25,7 +25,8 @@ default_task = ["clean", "analyze", "publish"]
 @init
 def set_properties(project):
     project.build_depends_on("mock")
-    project.build_depends_on("moto")
+    # moto 1.0.0 dropped support for Python 2.6 and boto version 2
+    project.build_depends_on("moto<1.0")
     project.build_depends_on("PyYAML")
     project.build_depends_on("unittest2>=0.7")
     # webtest 2.0.24 dropped support for Python 2.6
