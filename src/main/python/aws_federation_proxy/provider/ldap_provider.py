@@ -20,7 +20,7 @@ class Provider(ProviderByGroups):
 
         self.logger.debug('User: "%s"', self.user.lower())
         search_filter = '(|(&(objectClass=user)' \
-                        '(userPrincipalName=%s)))' \
+                        '(sAMAccountName=%s)))' \
                         % self.user.lower()
 
         self.logger.debug('User DN Search Filter: "%s"', search_filter)
