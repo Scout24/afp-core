@@ -4,7 +4,6 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 from mock import patch
 from base_provider_tests import BaseProviderTest
-from aws_federation_proxy import PermissionError
 from aws_federation_proxy.provider.provider_by_ip import Provider
 
 ACCOUNT_NAME = "testaccount"
@@ -63,7 +62,7 @@ class MachineProviderTests(BaseProviderTest):
         mock_gethostbyaddr.return_value = ["tuvfoo42.invalid"]
         self.config['allowed_domains'] = ["valid"]
         provider = self.testclass("tuvfoo42.invalid", self.config)
-        self.assertRaises(PermissionError, provider.get_accounts_and_roles)
+        self.assertRaises(Exception, provider.get_accounts_and_roles)
 
     @patch("aws_federation_proxy.provider.provider_by_ip.gethostbyaddr")
     def test_invalid_names_raise_exception(self, mock_gethostbyaddr):
@@ -71,4 +70,4 @@ class MachineProviderTests(BaseProviderTest):
         mock_gethostbyaddr.return_value = ["tuvfoo4.valid"]
         self.config['allowed_domains'] = ["something.else", "valid"]
         provider = self.testclass("tuvfoo42.valid", self.config)
-        self.assertRaises(PermissionError, provider.get_accounts_and_roles)
+        self.assertRaises(Exception, provider.get_accounts_and_roles)

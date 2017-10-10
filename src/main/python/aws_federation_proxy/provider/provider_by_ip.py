@@ -4,7 +4,6 @@ from __future__ import print_function, absolute_import, unicode_literals, divisi
 
 from socket import gethostbyaddr
 
-from aws_federation_proxy import PermissionError
 from aws_federation_proxy.provider import BaseProvider
 
 
@@ -18,13 +17,7 @@ class ProviderByIP(BaseProvider):
     def get_accounts_and_roles(self):
         """Return a dict with one account and one aws role"""
         self.role_prefix = self.config.get('role_prefix', "")
-        try:
-            self.client_fqdn = gethostbyaddr(self.user)[0]
-        except Exception as exc:
-            # The exception message of gethostbyaddr() is quite useless since
-            # it does not include the address that was looked up.
-            message = "Lookup for '{0}' failed: {1}".format(self.user, exc)
-            raise Exception(message)
+        self.client_fqdn = gethostbyaddr(self.user)[0]
         self.check_host_allowed()
         self._get_role_name()
         reason = "Machine {0} (FQDN {1}) matched the role {2}".format(
@@ -35,7 +28,7 @@ class ProviderByIP(BaseProvider):
         self.client_host, self.client_domain = self.client_fqdn.split(".", 1)
         allowed_domains = self.config['allowed_domains']
         if self.client_domain not in allowed_domains:
-            raise PermissionError("Client IP {0} (FQDN {1}) is not permitted".format(
+            raise Exception("Client IP {0} (FQDN {1}) is not permitted".format(
                 self.user, self.client_fqdn))
 
     def _get_role_name(self):
@@ -54,8 +47,7 @@ class Provider(ProviderByIP):
     def check_host_allowed(self):
         super(Provider, self).check_host_allowed()
         if len(self.client_host) != 8:
-            raise PermissionError(
-                "Client {0} has an invalid name".format(self.client_fqdn))
+            raise Exception("Client {0} has an invalid name".format(self.client_fqdn))
 
     def _normalize_loctyp(self):
         """Return the normalized (ber/ham -> pro) loctyp of self.client_host"""

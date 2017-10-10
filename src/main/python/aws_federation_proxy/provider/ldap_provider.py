@@ -15,16 +15,23 @@ class Provider(ProviderByGroups):
         ldap_base_groups = self.config['ldap_base_groups']
         ldap_bind_dn = self.config['ldap_bind_dn']
         ldap_bind_password = self.config['ldap_bind_password']
+        ldap_starttls = self.config['ldap_starttls']
 
         l = ldap.initialize(ldap_uri)
 
         self.logger.debug('User: "%s"', self.user.lower())
         search_filter = '(|(&(objectClass=user)' \
-                        '(sAMAccountName=%s)))' \
+                        '(userPrincipalName=%s)))' \
                         % self.user.lower()
 
         self.logger.debug('User DN Search Filter: "%s"', search_filter)
         try:
+            l.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_DEMAND)
+
+            # start TLS onlyif requested and not on ldaps connects (already SSL!)
+            if ldap_starttls and not ldap_uri.startswith("ldaps:"):
+                l.start_tls_s()
+
             l.simple_bind_s(ldap_bind_dn, ldap_bind_password)
 
             # Find user's DN

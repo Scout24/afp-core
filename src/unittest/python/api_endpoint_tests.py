@@ -198,8 +198,7 @@ class AFPEndpointTest(BaseEndpointTest):
             }
         }
         self._create_app()
-        with self.assertLogs(wsgi_api.LOGGER_NAME, logging.ERROR):
-            result = self.app.get('/status', expect_errors=True)
+        result = self.app.get('/status', expect_errors=True)
         self.assertEqual(result.status_int, 404)
 
     def test_account_broken_providerconfig_must_be_reported(self):
@@ -361,17 +360,17 @@ class AFPEndpointTest(BaseEndpointTest):
         self.assertEqual(result.status_int, 403)
         self.assertEqual(self.user, result.headers['X-Username'])
 
-        result.mustcontain("Permission Denied")
+        result.mustcontain("Forbidden")
         result = self.app.get('/account/testaccount/illegalrole/credentials',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("Permission Denied")
+        result.mustcontain("Forbidden")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         result = self.app.get('/account/testaccount/illegalrole/consoleurl',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("Permission Denied")
+        result.mustcontain("Forbidden")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         logged_data = str(self.log_file.read())
@@ -390,19 +389,19 @@ class AFPEndpointTest(BaseEndpointTest):
         result = self.app.get('/account/testaccount1/testrole',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("Permission Denied")
+        result.mustcontain("Forbidden")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         result = self.app.get('/account/testaccount1/testrole/credentials',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("Permission Denied")
+        result.mustcontain("Forbidden")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         result = self.app.get('/account/testaccount1/testrole/consoleurl',
                               expect_errors=True)
         self.assertEqual(result.status_int, 403)
-        result.mustcontain("Permission Denied")
+        result.mustcontain("Forbidden")
         self.assertEqual(self.user, result.headers['X-Username'])
 
         logged_data = str(self.log_file.read())
@@ -415,16 +414,13 @@ class AFPEndpointTest(BaseEndpointTest):
     def test_502_on_aws_failure(self, mock_get_aws_credentials):
         mock_get_aws_credentials.side_effect = AWSError("aws is down")
 
-        with self.assertLogs(wsgi_api.LOGGER_NAME, logging.ERROR):
-            result = self.app.get('/account/testaccount/testrole',
-                                  expect_errors=True)
+        result = self.app.get('/account/testaccount/testrole', expect_errors=True)
         self.assertEqual(result.status_int, 502)
-        result.mustcontain("Call to AWS failed")
+        result.mustcontain("aws is down")
         self.assertEqual(self.user, result.headers['X-Username'])
 
     @patch("aws_federation_proxy.aws_federation_proxy.AWSFederationProxy.get_aws_credentials")
     def test_all_exceptions_are_loggged(self, mock_get_aws_credentials):
         mock_get_aws_credentials.side_effect = Exception("some random exception")
 
-        with self.assertLogs(wsgi_api.LOGGER_NAME, logging.ERROR):
-            self.app.get('/account/testaccount/testrole', expect_errors=True)
+        self.app.get('/account/testaccount/testrole', expect_errors=True)

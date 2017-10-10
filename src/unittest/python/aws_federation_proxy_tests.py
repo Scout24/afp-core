@@ -265,17 +265,16 @@ class BaseAFPTest(object):
     @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")
     def test_get_aws_credentials_handles_sts_errors(
             self, mock_check_user_permissions, mock_sts_connection):
-        """Other errors must raise AWSError and log the AWS request ID"""
-        fake_boto_error = boto.exception.AWSConnectionError("AWS message")
-        fake_boto_error.request_id = "111222333"
+        """Other errors must raise AWSError and contain the Error """
+        error_message = 'AWS message'
+        fake_boto_error = boto.exception.AWSConnectionError(error_message)
         mock_sts_connection.side_effect = fake_boto_error
 
-        with self.assertLogs(level='ERROR') as cm:
-            self.assertRaises(
-                AWSError,
-                self.proxy.get_aws_credentials, self.account_alias, self.role)
-        all_log_messages = "".join(cm.output)
-        self.assertIn(fake_boto_error.request_id, all_log_messages)
+        try:
+            self.proxy.get_aws_credentials(self.account_alias, self.role)
+            self.assertFail()
+        except AWSError as error:
+            self.assertIn(error_message, error)
 
     @mock_sts
     @patch("aws_federation_proxy.AWSFederationProxy.check_user_permissions")
