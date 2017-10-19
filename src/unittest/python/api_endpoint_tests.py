@@ -244,6 +244,16 @@ class AFPEndpointTest(BaseEndpointTest):
         self.assertTrue(result.json == accounts_and_roles)
         self.assertEqual(self.user, result.headers['X-Username'])
 
+#    def test_get_list_roles_and_accounts_withid(self):
+#        result = self.app.get('/account?withid')
+#        accounts_and_roles_withid = {
+#            "testaccount": {"id": "123456789012", "roles": ["testrole"]},
+#            "testaccount1": {"id": "987654321987", "roles": ["testrole2"]}
+#        }
+#        self.assertEqual(result.status_int, 200)
+#        self.assertTrue(result.json == accounts_and_roles_withid)
+#        self.assertEqual(self.user, result.headers['X-Username'])
+
     @mock_sts
     def test_get_credentials(self):
         result = self.app.get('/account/testaccount/testrole/credentials')
