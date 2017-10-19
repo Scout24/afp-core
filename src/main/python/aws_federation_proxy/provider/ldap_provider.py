@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+from __future__ import print_function, absolute_import, division
 
 import ldap
 
@@ -45,10 +46,10 @@ class Provider(ProviderByGroups):
 
             self.logger.debug('Groups: "%s"', results)
             return results
-        except ldap.LDAPError, e:
-            print e.message['info']
+        except ldap.LDAPError as e:
+            print(e.message['info'])
             if type(e.message) == dict and 'desc' in e.message:
-                print e.message['desc']
+                print(e.message['desc'])
             else:
-                print e
+                print(e)
         return False
