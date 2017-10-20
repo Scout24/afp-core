@@ -10,7 +10,7 @@
 .. image:: https://landscape.io/github/ImmobilienScout24/afp-core/master/landscape.svg?style=flat
    :target: https://landscape.io/github/ImmobilienScout24/afp-core/master
    :alt: Code Health
-   
+
 ========
 afp-core
 ========

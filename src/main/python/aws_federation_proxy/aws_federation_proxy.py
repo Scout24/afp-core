@@ -142,10 +142,8 @@ class AWSFederationProxy(object):
                 role_session_name=self.user)
         except Exception as error:
             if getattr(error, 'status', None) == 403:
-                raise PermissionError(str(error))
-            self.logger.exception("AWS STS failed with: {exc_vars}".format(
-                exc_vars=vars(error)))
-            raise AWSError(str(error))
+                raise PermissionError(error.message)
+            raise AWSError(error.message)
         return assumed_role_object.credentials
 
     @staticmethod
@@ -171,7 +169,6 @@ class AWSFederationProxy(object):
         request_url = (
             "https://signin.aws.amazon.com/federation"
             "?Action=getSigninToken"
-            "&SessionDuration=43200"
             "&Session=" +
             cls._generate_urlencoded_json_credentials(credentials))
         reply = requests.get(request_url)

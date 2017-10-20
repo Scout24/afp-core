@@ -8,7 +8,6 @@ use_plugin("python.pylint")
 use_plugin("python.coverage")
 use_plugin("python.distutils")
 use_plugin("copy_resources")
-use_plugin("filter_resources")
 
 name = 'afp-core'
 summary = 'API and backend for temporary authentication to aws services'
@@ -40,6 +39,7 @@ def set_properties(project):
     project.depends_on("yamlreader")
     project.depends_on("bottle")
     project.depends_on("boto>=2.38.0")
+    project.depends_on("ldap")
 
     project.set_property("verbose", True)
     project.set_property('flake8_include_test_sources', True)
