@@ -151,7 +151,13 @@ def get_accountlist(proxy):
         (key, role_set_to_list(value)) for (key, value)
         in accounts_and_roles_with_sets.items()
     )
-    return accounts_and_roles
+    if 'withid' in request.query:
+        # "testaccount": {"id": "123456789012", "roles": ["testrole"]}
+        return dict([(x, {'id': proxy.account_config.get(x, {}).get('id', None), 'roles': y})
+                     for x, y in accounts_and_roles.items()])
+    else:
+        # "testaccount": ["testrole"]
+        return accounts_and_roles
 
 
 @route('/account/<account>/<role>')

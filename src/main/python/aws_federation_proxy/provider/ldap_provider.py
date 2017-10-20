@@ -3,7 +3,6 @@
 from __future__ import print_function, absolute_import, division
 
 import ldap
-
 from aws_federation_proxy.provider import ProviderByGroups
 
 
