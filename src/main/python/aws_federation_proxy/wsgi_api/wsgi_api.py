@@ -153,7 +153,8 @@ def get_accountlist(proxy):
     )
     if 'withid' in request.query:
         # "testaccount": {"id": "123456789012", "roles": ["testrole"]}
-        return dict([(x, {'id': proxy.account_config[x]['id'], 'roles': y}) for x, y in accounts_and_roles.items()])
+        return dict([(x, {'id': proxy.account_config.get(x, {}).get('id', None), 'roles': y})
+                     for x, y in accounts_and_roles.items()])
     else:
         # "testaccount": ["testrole"]
         return accounts_and_roles
